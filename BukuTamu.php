@@ -5,15 +5,9 @@ require_once "php-cli-colors.php";
 class BukuTamu {
   private $dataTamu;
   private $count;
-  private $colors;
 
   public function __construct() {
     $this->populateData();
-    $this->colors = new Colors();
-  }
-
-  public function getCount() {
-    return $this->count;
   }
 
   public function addTamu($nama, $alamat) {
@@ -21,9 +15,8 @@ class BukuTamu {
       'nama' => $nama,
       'alamat' => $alamat
     ];
-    // $this->count++;
+
     $this->refreshData();
-    
   }
 
   public function printTamu() {
@@ -37,13 +30,12 @@ class BukuTamu {
       $output .= sprintf("| %3d. | %-20s | %-50s |\n", $index, $tamu['nama'], $tamu['alamat']);
     }
     $output .= $horizontalLine;
-    echo $this->colors->getColoredString($output, "green");
-    // echo $output;
+    return $output;
   }
 
   public function deleteTamu($index) {
     unset($this->dataTamu[$index]);
-    refreshData();
+    $this->refreshData();
   }
 
   public function modifyTamu($index, $nama, $alamat) {
@@ -51,26 +43,19 @@ class BukuTamu {
       'nama' => $nama,
       'alamat' => $alamat
     ];
-    refreshData();
+    $this->refreshData();
   }
 
   private function exportTamuToJSON() {
     $jsonTamu = json_encode($this->dataTamu);
-    
-    # write to file
-    $file = fopen('tamu.json', 'w');
-    fwrite($file, $jsonTamu);
+    file_put_contents('tamu.json', $jsonTamu);
   }
 
   private function loadTamuFromJSONFile() {
     # check if file exists
     if (file_exists('tamu.json')) {
       # read from file
-      $file = fopen('tamu.json', 'r');
-      $jsonTamu = fread($file, filesize('tamu.json'));
-      fclose($file);
-
-      # decode json
+      $jsonTamu = file_get_contents('tamu.json');
       $this->dataTamu = json_decode($jsonTamu, true);
 
       return true;
@@ -81,11 +66,12 @@ class BukuTamu {
   private function populateData() {
     $dataExist = $this->loadTamuFromJSONFile();
     if ($dataExist) {
-      # set counter to the number of data in the JSON file
-      $this->count = count($this->dataTamu);
+      # get last key of the array and set it as count
+      $lastKey = end(array_keys($this->dataTamu));
+      $this->count = $lastKey + 1;
     } else {
       $this->dataTamu = [];
-      $this->count = 0;
+      $this->count = 1;
     }
   }
 
