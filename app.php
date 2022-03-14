@@ -1,6 +1,12 @@
 #!/usr/bin/php
 <?php
 
+/*
+* Nama : Dimas Tri Mustakim
+* NIM  : 205150200111049
+*/
+
+
 require_once "BukuTamu.php";
 
 function input($prompt = null) {
