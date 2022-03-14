@@ -1,25 +1,30 @@
 <?php
 
-require_once "php-cli-colors.php";
-
 class BukuTamu {
   private $dataTamu;
-  private $count;
 
   public function __construct() {
     $this->populateData();
   }
 
   public function addTamu($nama, $alamat) {
-    $this->dataTamu[$this->count] = [
-      'nama' => $nama,
-      'alamat' => $alamat
-    ];
+    # check if array $dataTamu is empty
+    if (empty($this->dataTamu)) {
+      $this->dataTamu[1] = [
+        'nama' => $nama,
+        'alamat' => $alamat
+      ];
+    } else {
+      $this->dataTamu[] = [
+        'nama' => $nama,
+        'alamat' => $alamat
+      ];
+    }
 
     $this->refreshData();
   }
 
-  public function printTamu() {
+  public function getDaftarTamu() {
     $output = "";
     $horizontalLine = "+----------------------------------------------------------------------------------+\n";
     $output .= $horizontalLine;
@@ -33,9 +38,24 @@ class BukuTamu {
     return $output;
   }
 
+  public function getJumlahTamu() {
+    return count($this->dataTamu);
+  }
+
   public function deleteTamu($index) {
     unset($this->dataTamu[$index]);
+    $this->rearrangeArrayIndex();
     $this->refreshData();
+  }
+
+  public function rearrangeArrayIndex() {
+    $count = 1;
+    $temp = [];
+    foreach ($this->dataTamu as $key => $value) {
+      $temp[$count] = $value;
+      $count++;
+    };
+    $this->dataTamu = $temp;
   }
 
   public function modifyTamu($index, $nama, $alamat) {
@@ -47,7 +67,9 @@ class BukuTamu {
   }
 
   private function exportTamuToJSON() {
+    # encode array to json
     $jsonTamu = json_encode($this->dataTamu);
+    # save to file
     file_put_contents('tamu.json', $jsonTamu);
   }
 
@@ -65,14 +87,9 @@ class BukuTamu {
 
   private function populateData() {
     $dataExist = $this->loadTamuFromJSONFile();
-    if ($dataExist) {
-      # get last key of the array and set it as count
-      $lastKey = end(array_keys($this->dataTamu));
-      $this->count = $lastKey + 1;
-    } else {
+    if (!$dataExist or empty($this->dataTamu) or !isset($this->dataTamu)) {
       $this->dataTamu = [];
-      $this->count = 1;
-    }
+    } 
   }
 
   private function refreshData() {

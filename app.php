@@ -2,8 +2,6 @@
 <?php
 
 require_once "BukuTamu.php";
-require_once "php-cli-colors.php";
-
 
 function input($prompt = null) {
     if ($prompt) {
@@ -48,13 +46,14 @@ MENU;
 while (TRUE) {
     clear_terminal();
     echo $HEADER . "\n";
-    echo green_color(BUKUTAMU->printTamu());
+    echo green_color(BUKUTAMU->getDaftarTamu());
+    echo green_color("Jumlah Tamu : " . BUKUTAMU->getJumlahTamu() . "\n");
     echo $MENU;
     $input = input(white_color("Masukkan pilihan: "));
     switch ($input) {
         case '1':
             clear_terminal();
-            echo green_color(BUKUTAMU->printTamu());
+            echo green_color(BUKUTAMU->getDaftarTamu());
             echo "\n\n";
             $nama = input("Masukkan nama: ");
             $alamat = input("Masukkan alamat: ");
@@ -64,7 +63,7 @@ while (TRUE) {
         
         case '2':
             clear_terminal();
-            echo green_color(BUKUTAMU->printTamu());
+            echo green_color(BUKUTAMU->getDaftarTamu());
             echo "\n\n";
             $index = input("Masukkan index: ");
             BUKUTAMU->deleteTamu($index);
@@ -74,14 +73,14 @@ while (TRUE) {
         case '3':
             clear_terminal();
             echo "Daftar Tamu\n";
-            echo green_color(BUKUTAMU->printTamu());
+            echo green_color(BUKUTAMU->getDaftarTamu());
             echo "\n";
             input("Tekan enter untuk kembali ke menu");
             break;
         
         case '4':
             clear_terminal();
-            echo green_color(BUKUTAMU->printTamu());
+            echo green_color(BUKUTAMU->getDaftarTamu());
             echo "\n\n";
             $index = input("Masukkan index: ");
             $nama = input("Masukkan nama: ");
